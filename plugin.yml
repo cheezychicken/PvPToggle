@@ -1,0 +1,20 @@
+name: PvPToggle
+version: 0.1
+description: Toggles PvP for people
+database: true
+author: cheezychicken
+website: ${project.url}
+main: com.cheezychicken.pvptoggle.PvPToggle
+
+commands:
+  pvp:
+    description: Toggle a player's AdminHunt mode
+    permission: pvp.toggle
+    usage: |
+           /<command> on - Turns PvP on for the player
+           /<command> off - Turns PvP off for the player
+           /<command> list - Lists players with PvP on
+
+permissions:
+  pvp.toggle:   
+    description: Allow use of /pvp command
