@@ -15,7 +15,7 @@ import nu.nerd.nerdboard.NerdBoard;
  * A class which encapsulates all of this plugin's hooked functionality
  * dependent on the NerdBoard plugin.
  */
-final class NerdBoardHook {
+public class NerdBoardHook {
     // ------------------------------------------------------------------------
     /**
      * The NerdBoard instance.
@@ -44,11 +44,10 @@ final class NerdBoardHook {
      *
      * @param name the name of the team.
      * @param color (nullable) the team's color (i.e. player name color).
-     * @param collisions if entity collisions should be enabled for players on
-     *        this team.
+     * 
      * @return a {@link Team} with the given properties.
      */
-    private static Team configureTeam(String name, ChatColor color) {
+    private Team configureTeam(String name, ChatColor color) {
         Team team = getOrCreateTeam(name);
         if (color != null) {
             team.setColor(color);
@@ -78,7 +77,7 @@ final class NerdBoardHook {
      * @param name the Team name.
      * @return the Team with that name.
      */
-    private static Team getOrCreateTeam(String name) {
+    private Team getOrCreateTeam(String name) {
         Team team = _scoreboard.getTeam(name);
         if (team == null) {
             team = _nerdBoard.addTeam(name);
@@ -95,12 +94,15 @@ final class NerdBoardHook {
      * between players.
      *
      * @param player the player.
+     * @return 
+     * @return 
      */
-    public void checkPvPstate(Player player) {
+    public static void checkPvPstate(Player player) {
         boolean inPvPmode = PvPToggle.isActive(player);
         Team team = inPvPmode ? _pvpTeam
                                             : _defaultTeam;
         _nerdBoard.addPlayerToTeam(team, player);
+        Bukkit.getServer().broadcastMessage("pvp state checked");
         if (player.getScoreboard() != _scoreboard) {
             player.setScoreboard(_scoreboard);
         }

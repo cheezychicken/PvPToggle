@@ -19,20 +19,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
-
-import nu.nerd.nerdboard.NerdBoard;
-
 // ----------------------------------------------------------------------------------------------------------
 /**
- * The main plugin class. (I know everything is in here)
+ * The main plugin class.
  */
 public class PvPToggle extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------------------------------------
     /**
-     * Stores the UUIDs of the players currently being hunted.
+     * Stores the UUIDs of the players currently pvping.
      */
     private static final Set<UUID> ENABLED_PLAYERS = new HashSet<>();
 
@@ -83,7 +78,9 @@ public class PvPToggle extends JavaPlugin implements Listener {
             if (args.length == 0 || !sender.hasPermission("pvp.toggle")) {
                 return false;
                 
-            } else if (args[0].equalsIgnoreCase("on")) {
+            } else {
+           
+            if (args[0].equalsIgnoreCase("on")) {
             	if (args.length == 1) {
                 Player player = (Player) sender;
                 pvpStatusOn(player, "Player");
@@ -101,6 +98,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
             	if (args.length == 1) {
                     Player player = (Player) sender;
                     pvpStatusOff(player, "Player");
+                    NerdBoardHook.checkPvPstate(player);
                     return true;
                     // Admins can change other people's
                 	} else if (sender.hasPermission("pvp.others")) {
@@ -122,6 +120,9 @@ public class PvPToggle extends JavaPlugin implements Listener {
                 }
                 sender.sendMessage(playerList);
                 return true;
+            }
+            
+        		
             }
             return false;
         }
@@ -182,7 +183,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------------------------------------
     /**
-     * Turns the player's hunted status on or off.
+     * Turns the player's hunted status on
      *
      */
     private void pvpStatusOn(Player player, String reason) {
@@ -204,6 +205,12 @@ public class PvPToggle extends JavaPlugin implements Listener {
 
     }
 
+    // ------------------------------------------------------------------------------------------------------
+    /**
+     * Turns the player's hunted status off
+     *
+     */
+    
     private void pvpStatusOff(Player player, String reason) {
         UUID uuid = player.getUniqueId();
         String msg = "";
@@ -228,7 +235,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
      * @param player the player.
      * @return true if the player has pvp on
      */
-    public boolean isActive(Player player) {
+    public static boolean isActive(Player player) {
         return ENABLED_PLAYERS.contains(player.getUniqueId());
     }
 
