@@ -84,11 +84,13 @@ public class PvPToggle extends JavaPlugin implements Listener {
             	if (args.length == 1) {
                 Player player = (Player) sender;
                 pvpStatusOn(player, "Player");
+                NerdBoardHook.checkPvPstate(player);
                 return true;
                 // Admins can change other people's
             	} else if (sender.hasPermission("pvp.others")) {
             		Player player = Bukkit.getPlayer(args[1]);
                     pvpStatusOn(player, "Admin");
+                    NerdBoardHook.checkPvPstate(player);
                     return true;		
             	} else {
             		return false;
@@ -104,6 +106,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
                 	} else if (sender.hasPermission("pvp.others")) {
                 		Player player = Bukkit.getPlayer(args[1]);
                         pvpStatusOff(player, "Admin");
+                        NerdBoardHook.checkPvPstate(player);
                         return true;		
                 	} else {
                 		return false;
