@@ -7,6 +7,8 @@ website: ${project.url}
 main: com.cheezychicken.pvptoggle.PvPToggle
 api-version: 1.16
 
+depend: [WorldGuard, NerdBoard]
+
 commands:
   pvp:
     description: Toggle a player's AdminHunt mode
@@ -19,3 +21,5 @@ commands:
 permissions:
   pvp.toggle:   
     description: Allow use of /pvp command
+  pvp.others:
+    description: Allow users to change pvp status of other people
