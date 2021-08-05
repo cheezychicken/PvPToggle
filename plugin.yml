@@ -5,6 +5,7 @@ database: true
 author: cheezychicken
 website: ${project.url}
 main: com.cheezychicken.pvptoggle.PvPToggle
+api-version: 1.16
 
 commands:
   pvp:
