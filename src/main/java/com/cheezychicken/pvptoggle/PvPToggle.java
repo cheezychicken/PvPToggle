@@ -1,6 +1,8 @@
 package com.cheezychicken.pvptoggle;
 import com.sk89q.worldguard.bukkit.protection.events.DisallowedPVPEvent;
 
+import nu.nerd.nerdboard.NerdBoard;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -38,15 +40,22 @@ public class PvPToggle extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(this, this);
-
-        saveDefaultConfig();
+      
+        NerdBoard nerdBoard = NerdBoardHook.getNerdBoard();
+        if (nerdBoard != null) {
+            new NerdBoardHook(nerdBoard);
+        } else {
+            //log("NerdBoard is required. http://github.com/nerdnu/NerdBoard");
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
 
     /**    for (String uuidString : getConfig().getStringList("players")) {
     *        try {
     *            UUID uuid = UUID.fromString(uuidString);
     *            ENABLED_PLAYERS.add(uuid);
     *            log("Loaded serialized player: " + uuidString);
-    *        } catch (IllegalArgumentException e) {
+    *        } catch (IllegalArgumentException e) {y/pvp
     *           log("Invalid UUID found in config: " + uuidString);
     *        }
     *    }
@@ -84,13 +93,11 @@ public class PvPToggle extends JavaPlugin implements Listener {
             	if (args.length == 1) {
                 Player player = (Player) sender;
                 pvpStatusOn(player, "Player");
-                NerdBoardHook.checkPvPstate(player);
                 return true;
                 // Admins can change other people's
             	} else if (sender.hasPermission("pvp.others")) {
             		Player player = Bukkit.getPlayer(args[1]);
                     pvpStatusOn(player, "Admin");
-                    NerdBoardHook.checkPvPstate(player);
                     return true;		
             	} else {
             		return false;
@@ -100,13 +107,11 @@ public class PvPToggle extends JavaPlugin implements Listener {
             	if (args.length == 1) {
                     Player player = (Player) sender;
                     pvpStatusOff(player, "Player");
-                    NerdBoardHook.checkPvPstate(player);
                     return true;
                     // Admins can change other people's
                 	} else if (sender.hasPermission("pvp.others")) {
                 		Player player = Bukkit.getPlayer(args[1]);
                         pvpStatusOff(player, "Admin");
-                        NerdBoardHook.checkPvPstate(player);
                         return true;		
                 	} else {
                 		return false;
@@ -148,6 +153,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
     // ------------------------------------------------------------------------------------------------------
     /**
      * Turn off PvP for a player when they die.
+     * @param player the player
      */
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
@@ -160,6 +166,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
     // ------------------------------------------------------------------------------------------------------
     /**
      * Turn off PvP for a player when they log out.
+     * @param player the player
      */
     
     @EventHandler
@@ -174,6 +181,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
     // ------------------------------------------------------------------------------------------------------
     /**
      * Turn off PvP for a player when they are kicked.
+     * @param player the player
      */
     
     @EventHandler
@@ -187,13 +195,16 @@ public class PvPToggle extends JavaPlugin implements Listener {
     // ------------------------------------------------------------------------------------------------------
     /**
      * Turns the player's hunted status on
-     *
+     * @param player the player
+     * @param reason Reason for change
      */
     private void pvpStatusOn(Player player, String reason) {
         UUID uuid = player.getUniqueId();
         String msg = "";
         if (isActive(player)) {
+        	if(reason == "Player") {
         	player.sendMessage("PvP is already enabled for you!");
+        	}
         } else {
             if(reason == "Player") {
             	msg = ChatColor.RED + player.getName() + " has turned their PvP on." + ChatColor.RESET;
@@ -204,6 +215,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
             if (msg != "") {
             	getServer().broadcastMessage(msg);
             }
+            NerdBoardHook.checkPvPstate(player);
         }
 
     }
@@ -211,7 +223,8 @@ public class PvPToggle extends JavaPlugin implements Listener {
     // ------------------------------------------------------------------------------------------------------
     /**
      * Turns the player's hunted status off
-     *
+     * @param player the player
+     * @param reason Reason for change
      */
     
     private void pvpStatusOff(Player player, String reason) {
@@ -227,8 +240,11 @@ public class PvPToggle extends JavaPlugin implements Listener {
             if (msg != "") {
             	getServer().broadcastMessage(msg);
             }
+            NerdBoardHook.checkPvPstate(player);
         } else {
+        	if(reason == "Player") {
         	player.sendMessage("PvP is already disabled for you!");
+        	}
         }
       
     }

@@ -87,22 +87,18 @@ public class NerdBoardHook {
 
     // ------------------------------------------------------------------------
     /**
-     * Assign the player to the Team that corresponds to its vanish and modmode
-     * states, and then update their scoreboard if necessary.
+     * Assign the player to the Team that corresponds to its pvp
+     * state, and then update their scoreboard if necessary.
      *
-     * The Team controls the name tag prefix (colour) and collision detection
-     * between players.
+     * The Team controls the name tag prefix (colour)
      *
      * @param player the player.
-     * @return 
-     * @return 
      */
     public static void checkPvPstate(Player player) {
         boolean inPvPmode = PvPToggle.isActive(player);
         Team team = inPvPmode ? _pvpTeam
                                             : _defaultTeam;
         _nerdBoard.addPlayerToTeam(team, player);
-        Bukkit.getServer().broadcastMessage("pvp state checked");
         if (player.getScoreboard() != _scoreboard) {
             player.setScoreboard(_scoreboard);
         }
@@ -115,11 +111,11 @@ public class NerdBoardHook {
      *
      * @param bool the boolean.
      * @return the translated OptionStatus.
-     */
+     *
     private static Team.OptionStatus boolToStatus(boolean bool) {
         return bool ? Team.OptionStatus.ALWAYS : Team.OptionStatus.NEVER;
     }
-
+	*/
     /**
      * Scoreboard API stuff for colored name tags
      */
