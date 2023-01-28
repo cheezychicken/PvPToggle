@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,6 +35,16 @@ public class PvPToggle extends JavaPlugin implements Listener {
     private static final Set<UUID> ENABLED_PLAYERS = new HashSet<>();
 
     // ------------------------------------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------------------------------------
+    /**
+     * Stores the UUIDs of the players with PVP persisting.
+     */
+    private static final Set<UUID> PERSISTED_PLAYERS = new HashSet<>();
+    
+    // ------------------------------------------------------------------------------------------------------
+    
+    
     /**
      * @see JavaPlugin#onEnable().
      */
@@ -94,11 +105,20 @@ public class PvPToggle extends JavaPlugin implements Listener {
                 Player player = (Player) sender;
                 pvpStatusOn(player, "Player");
                 return true;
+                
+            	} else if (args[1].equalsIgnoreCase("persist")) {
+            		Player player = (Player) sender;
+					UUID uuid = player.getUniqueId();
+            		PERSISTED_PLAYERS.add(uuid);
+            		pvpStatusOn(player, "Player");
+            		return true;
+            	
                 // Admins can change other people's
             	} else if (sender.hasPermission("pvp.others")) {
             		Player player = Bukkit.getPlayer(args[1]);
                     pvpStatusOn(player, "Admin");
-                    return true;		
+                    return true;
+                    
             	} else {
             		return false;
             	}
@@ -158,7 +178,7 @@ public class PvPToggle extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (isActive(player)) {
+        if (isActive(player) && !isPersisted(player)) {
             pvpStatusOff(player, "Death");
         }
     }
@@ -236,6 +256,9 @@ public class PvPToggle extends JavaPlugin implements Listener {
             } else if (reason == "Admin") {
             	msg = ChatColor.RED + player.getName() + " has had their PvP turned off." + ChatColor.RESET;
             }
+        	if(isPersisted(player)) {
+        		PERSISTED_PLAYERS.remove(uuid);
+        	}
             ENABLED_PLAYERS.remove(uuid);
             if (msg != "") {
             	getServer().broadcastMessage(msg);
@@ -257,6 +280,13 @@ public class PvPToggle extends JavaPlugin implements Listener {
     public static boolean isActive(Player player) {
         return ENABLED_PLAYERS.contains(player.getUniqueId());
     }
-
+    // ------------------------------------------------------------------------------------------------------
+    /**
+     * @param player the player.
+     * @return true if the player has pvp persisted
+     */
+    public static boolean isPersisted(Player player) {
+        return PERSISTED_PLAYERS.contains(player.getUniqueId());
+    }
     
 }
